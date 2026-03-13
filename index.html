@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fairy House Booking</title>
+
+<style>
+
+body{
+font-family: "Comic Sans MS", cursive;
+margin:0;
+background:linear-gradient(135deg,#ffd6ec,#c9f7d8,#cde7ff);
+display:flex;
+justify-content:center;
+align-items:center;
+min-height:100vh;
+}
+
+.container{
+background:white;
+padding:25px;
+border-radius:25px;
+box-shadow:0 10px 30px rgba(0,0,0,0.2);
+max-width:400px;
+width:90%;
+text-align:center;
+}
+
+h1{
+color:#ff6fb5;
+margin-bottom:5px;
+}
+
+.subtitle{
+font-size:14px;
+color:#6aa9ff;
+margin-bottom:20px;
+}
+
+label{
+display:block;
+margin-top:15px;
+font-weight:bold;
+color:#5c5c5c;
+}
+
+input,select{
+width:100%;
+padding:10px;
+border-radius:12px;
+border:2px solid #cde7ff;
+margin-top:6px;
+font-size:15px;
+}
+
+button{
+margin-top:20px;
+padding:12px;
+width:100%;
+border:none;
+border-radius:18px;
+background:#ff8ed1;
+color:white;
+font-size:16px;
+cursor:pointer;
+transition:.2s;
+}
+
+button:hover{
+background:#7fd4a6;
+}
+
+.sparkles{
+font-size:20px;
+margin-bottom:10px;
+}
+
+#confirmation{
+margin-top:15px;
+font-weight:bold;
+color:#3ba55d;
+}
+
+.decor{
+font-size:24px;
+margin:10px 0;
+}
+
+.slotFull{
+color:#aaa;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="sparkles">✨🌸🧚🌸✨</div>
+
+<h1>Fairy House</h1>
+<div class="subtitle">Book a magical fairy visit</div>
+
+<div class="decor">🍄🌷🦋</div>
+
+<form id="bookingForm">
+
+<label>Who is the visit for?</label>
+<input type="text" id="name" required>
+
+<label>Select date</label>
+<input type="date" id="date" required>
+
+<label>Select time</label>
+<select id="time" required>
+<option value="">Choose a time</option>
+</select>
+
+<button type="submit">Book Fairy Visit ✨</button>
+
+</form>
+
+<div id="confirmation"></div>
+
+</div>
+
+<script>
+
+const slots = [
+"10:00 AM",
+"11:00 AM",
+"12:00 PM",
+"1:00 PM",
+"2:00 PM",
+"3:00 PM",
+"4:00 PM"
+];
+
+const dateInput = document.getElementById("date");
+const timeSelect = document.getElementById("time");
+
+function loadSlots(){
+
+const date = dateInput.value;
+timeSelect.innerHTML = '<option value="">Choose a time</option>';
+
+if(!date) return;
+
+const bookings = JSON.parse(localStorage.getItem("fairyBookings") || "{}");
+const bookedTimes = bookings[date] || [];
+
+slots.forEach(slot => {
+
+const option = document.createElement("option");
+option.value = slot;
+option.textContent = slot;
+
+if(bookedTimes.includes(slot)){
+option.disabled = true;
+option.textContent += " (Booked)";
+option.classList.add("slotFull");
+}
+
+timeSelect.appendChild(option);
+
+});
+
+}
+
+dateInput.addEventListener("change",loadSlots);
+
+document.getElementById("bookingForm").addEventListener("submit",function(e){
+
+e.preventDefault();
+
+const name = document.getElementById("name").value;
+const date = dateInput.value;
+const time = timeSelect.value;
+
+if(!date || !time) return;
+
+const bookings = JSON.parse(localStorage.getItem("fairyBookings") || "{}");
+
+if(!bookings[date]) bookings[date] = [];
+
+if(bookings[date].includes(time)){
+alert("That fairy time is already booked!");
+return;
+}
+
+bookings[date].push(time);
+
+localStorage.setItem("fairyBookings",JSON.stringify(bookings));
+
+document.getElementById("confirmation").innerText =
+"🧚 Fairy visit booked for " + name + " on " + date + " at " + time + "!";
+
+document.getElementById("bookingForm").reset();
+timeSelect.innerHTML='<option value="">Choose a time</option>';
+
+});
+
+</script>
+
+</body>
+</html>
